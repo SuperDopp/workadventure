@@ -42,7 +42,10 @@ RUN --mount=type=secret,id=SENTRY_RELEASE \
 
 RUN mv /usr/src/chat/dist/index.html /usr/src/chat/dist/index.tpl.html
 # Bypassing a bug in envconfig generation that does not take into account relative base.
-RUN sed -i 's|src="/env-config|src="./env-config|g' /usr/src/chat/dist/index.tpl.html
+RUN sed -i 's|="/env-config|="/chat/env-config|g' /usr/src/chat/dist/index.tpl.html
+RUN sed -i 's|="static|="/chat/static|g' /usr/src/chat/dist/index.tpl.html
+RUN sed -i 's|="/assets|="/chat/assets|g' /usr/src/chat/dist/index.tpl.html
+
 
 # final production image
 FROM nginx:1.21.6-alpine

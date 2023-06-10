@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
                 clientPort: 80,
             },
         },
-        base: "./",
+        base: "./chat/",
         build: {
             sourcemap: true,
             rollupOptions: {
