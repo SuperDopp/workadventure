@@ -98,7 +98,7 @@ const { game: gameSize, real: realSize } = hdpiManager.getOptimalGameSize({ widt
 
 const config: Phaser.Types.Core.GameConfig = {
     type: mode,
-    title: "WorkAdventure",
+    title: "SuperDopp Demo World",
     scale: {
         parent: "game",
         width: gameSize.width,
