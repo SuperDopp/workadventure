@@ -98,7 +98,11 @@ const { game: gameSize, real: realSize } = hdpiManager.getOptimalGameSize({ widt
 
 const config: Phaser.Types.Core.GameConfig = {
     type: mode,
+<<<<<<< HEAD
     title: "SuperDopp Demo World",
+=======
+    title: "SuperDopp",
+>>>>>>> 0ea8eeff6 (Fix chat path bug)
     scale: {
         parent: "game",
         width: gameSize.width,
