@@ -45,18 +45,24 @@ function createWritingStatusMessageStore() {
 }
 export const writingStatusMessageStore = createWritingStatusMessageStore();
 
+export interface ChatGroup {
+    messages: ChatMessage[];
+    users: PlayerInterface[];
+}
+
 function createChatMessagesStore() {
-    const { subscribe, update } = writable<ChatMessage[]>([]);
+    const { subscribe, update } = writable<ChatGroup>({ messages: [], users: [] });
 
     return {
         subscribe,
         addIncomingUser(authorId: number) {
-            update((list) => {
-                const lastMessage = list[list.length - 1];
+            console.log("front.ChatStore.addIncomingUser: ", authorId);
+            update((chatGroup) => {
+                const lastMessage = chatGroup.messages[chatGroup.messages.length - 1];
                 if (lastMessage && lastMessage.type === ChatMessageTypes.userIncoming && lastMessage.targets) {
                     lastMessage.targets.push(getAuthor(authorId).userUuid);
                 } else {
-                    list.push({
+                    chatGroup.messages.push({
                         type: ChatMessageTypes.userIncoming,
                         targets: [getAuthor(authorId).userUuid],
                         date: new Date(),
@@ -79,16 +85,17 @@ function createChatMessagesStore() {
                     date: new Date(),
                 });
 
-                return list;
+                return chatGroup;
             });
         },
         addOutcomingUser(authorId: number) {
-            update((list) => {
-                const lastMessage = list[list.length - 1];
+            console.log("front.chatMessageStore.addOutcomingUser: ", authorId);
+            update((chatGroup) => {
+                const lastMessage = chatGroup.messages[chatGroup.messages.length - 1];
                 if (lastMessage && lastMessage.type === ChatMessageTypes.userOutcoming && lastMessage.targets) {
                     lastMessage.targets.push(getAuthor(authorId).userUuid);
                 } else {
-                    list.push({
+                    chatGroup.messages.push({
                         type: ChatMessageTypes.userOutcoming,
                         targets: [getAuthor(authorId).userUuid],
                         date: new Date(),
@@ -113,27 +120,27 @@ function createChatMessagesStore() {
 
                 //end of writing message
                 writingStatusMessageStore.addWritingStatus(authorId, ChatMessageTypes.userStopWriting);
-                return list;
+                return chatGroup;
             });
         },
         addPersonalMessage(text: string) {
             console.log("front.Stores.Chatstores addPersonalMessage: ", text);
             iframeListener.sendUserInputChat(text);
             _newChatMessageSubject.next(text);
-            update((list) => {
+            update((chatGroup) => {
                 console.log("Update front.Stores.Chatstores addPersonalMessage: ");
-                const lastMessage = list[list.length - 1];
+                const lastMessage = chatGroup.messages[chatGroup.messages.length - 1];
                 if (lastMessage && lastMessage.type === ChatMessageTypes.me && lastMessage.text) {
                     lastMessage.text.push(text);
                 } else {
-                    list.push({
+                    chatGroup.messages.push({
                         type: ChatMessageTypes.me,
                         text: [text],
                         date: new Date(),
                     });
                 }
 
-                return list;
+                return chatGroup;
             });
         },
         /**
@@ -141,11 +148,11 @@ function createChatMessagesStore() {
          */
         addExternalMessage(authorId: number, text: string, origin?: Window) {
             console.log("front.Stores.Chatstores.addExternalMessage: ", text);
-            update((list) => {
+            update((chatGroup) => {
                 const author = getAuthor(authorId);
                 let lastMessage = null;
-                if (list.length > 0) {
-                    lastMessage = list[list.length - 1];
+                if (chatGroup.messages.length > 0) {
+                    lastMessage = chatGroup.messages[chatGroup.messages.length - 1];
                 }
                 if (
                     lastMessage &&
@@ -155,7 +162,7 @@ function createChatMessagesStore() {
                 ) {
                     lastMessage.text.push(text);
                 } else {
-                    list.push({
+                    chatGroup.messages.push({
                         type: ChatMessageTypes.text,
                         text: [text],
                         author: author.userUuid,
@@ -186,7 +193,7 @@ function createChatMessagesStore() {
                 writingStatusMessageStore.addWritingStatus(authorId, ChatMessageTypes.userStopWriting);
 
                 iframeListener.sendUserInputChat(text, origin);
-                return list;
+                return chatGroup;
             });
             chatVisibilityStore.set(true);
         },

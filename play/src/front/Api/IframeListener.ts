@@ -7,6 +7,7 @@ import {
     handleMenuUnregisterEvent,
     warningContainerStore,
 } from "../Stores/MenuStore";
+import { chatMessagesStore } from "../Stores/ChatStore";
 import type { PlayerInterface } from "../Phaser/Game/PlayerInterface";
 import { ProtobufClientUtils } from "../Network/ProtobufClientUtils";
 import type { MessageUserJoined } from "../Connexion/ConnexionModels";
@@ -625,9 +626,9 @@ class IframeListener {
             exceptOrigin
         );
 
-        setInterval(() => {
-            console.log("front.Api.iFrameListener.sendUserInputChat: ", message);
-        }, 2000);
+        setTimeout(() => {
+            console.log(chatMessagesStore);
+        }, 0);
     }
 
     sendJoinProximityMeetingEvent(users: MessageUserJoined[]) {
