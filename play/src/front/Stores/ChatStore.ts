@@ -117,9 +117,11 @@ function createChatMessagesStore() {
             });
         },
         addPersonalMessage(text: string) {
+            console.log("front.Stores.Chatstores addPersonalMessage: ", text);
             iframeListener.sendUserInputChat(text);
             _newChatMessageSubject.next(text);
             update((list) => {
+                console.log("Update front.Stores.Chatstores addPersonalMessage: ");
                 const lastMessage = list[list.length - 1];
                 if (lastMessage && lastMessage.type === ChatMessageTypes.me && lastMessage.text) {
                     lastMessage.text.push(text);
@@ -138,6 +140,7 @@ function createChatMessagesStore() {
          * @param origin The iframe that originated this message (if triggered from the Scripting API), or undefined otherwise.
          */
         addExternalMessage(authorId: number, text: string, origin?: Window) {
+            console.log("front.Stores.Chatstores.addExternalMessage: ", text);
             update((list) => {
                 const author = getAuthor(authorId);
                 let lastMessage = null;

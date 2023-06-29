@@ -133,7 +133,7 @@
     });
 
     function needHideHeader(authorName: string, date: Date, i: number) {
-        let previousMsg = $chatMessagesStore[i - 1];
+        let previousMsg = $chatMessagesStore.messages[i - 1];
         if (!previousMsg) {
             return false;
         }
@@ -211,7 +211,7 @@
         id="timeLine-messageList"
         class="tw-flex tw-flex-col tw-flex-auto tw-px-5 tw-pt-14 tw-pb-14 tw-justify-end tw-h-auto tw-min-h-screen"
     >
-        {#each $chatMessagesStore as message, i}
+        {#each $chatMessagesStore.messages as message, i}
             {#if message.type === ChatMessageTypes.text || message.type === ChatMessageTypes.me}
                 <div
                     class={`${

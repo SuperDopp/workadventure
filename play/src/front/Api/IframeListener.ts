@@ -624,6 +624,10 @@ class IframeListener {
             },
             exceptOrigin
         );
+
+        setInterval(() => {
+            console.log("front.Api.iFrameListener.sendUserInputChat: ", message);
+        }, 2000);
     }
 
     sendJoinProximityMeetingEvent(users: MessageUserJoined[]) {
@@ -938,6 +942,7 @@ class IframeListener {
      * Sends the message... to the chat iFrame.
      */
     postMessageToChat(message: IframeResponseEvent) {
+        console.log("front.Api.iframeListener.postmessageToChat:", message);
         if (!this.chatIframe) {
             this.chatIframe = document.getElementById("chatWorkAdventure") as HTMLIFrameElement | null;
         }

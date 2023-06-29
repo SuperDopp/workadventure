@@ -165,25 +165,25 @@ services:
             - "traefik.http.routers.chat.entryPoints=web"
             - "traefik.http.services.chat.loadbalancer.server.port=8080"
 
-    maps:
-        image: thecodingmachine/php:8.1-v4-apache-node12
-        environment:
-            DEBUG_MODE: "$DEBUG_MODE"
-            HOST: "0.0.0.0"
-            NODE_ENV: development
-            FRONT_URL: http://play.workadventure.localhost
-            #APACHE_DOCUMENT_ROOT: dist/
-            #APACHE_EXTENSIONS: headers
-            #APACHE_EXTENSION_HEADERS: 1
-            STARTUP_COMMAND_0: sudo a2enmod headers
-            STARTUP_COMMAND_1: yarn install
-        volumes:
-            - ./maps:/var/www/html
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.maps.rule=Host(`maps.workadventure.localhost`)"
-            - "traefik.http.routers.maps.entryPoints=web,traefik"
-            - "traefik.http.services.maps.loadbalancer.server.port=80"
+    # maps:
+    #     image: thecodingmachine/php:8.1-v4-apache-node12
+    #     environment:
+    #         DEBUG_MODE: "$DEBUG_MODE"
+    #         HOST: "0.0.0.0"
+    #         NODE_ENV: development
+    #         FRONT_URL: http://play.workadventure.localhost
+    #         #APACHE_DOCUMENT_ROOT: dist/
+    #         #APACHE_EXTENSIONS: headers
+    #         #APACHE_EXTENSION_HEADERS: 1
+    #         STARTUP_COMMAND_0: sudo a2enmod headers
+    #         STARTUP_COMMAND_1: yarn install
+    #     volumes:
+    #         - ./maps:/var/www/html
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.maps.rule=Host(`maps.workadventure.localhost`)"
+    #         - "traefik.http.routers.maps.entryPoints=web,traefik"
+    #         - "traefik.http.services.maps.loadbalancer.server.port=80"
 
     back:
         image: thecodingmachine/nodejs:v2-18-bullseye
@@ -218,7 +218,7 @@ services:
             PUBLIC_MAP_STORAGE_URL: "http://map-storage.workadventure.localhost"
             INTERNAL_MAP_STORAGE_URL: "http://map-storage:3000"
             PLAYER_VARIABLES_MAX_TTL: $PLAYER_VARIABLES_MAX_TTL
-            EJABBERD_API_URI: http://ejabberd:5443/api/
+            EJABBERD_API_URI: http://xmpp.workadventure.localhost:5443/api/
             EJABBERD_DOMAIN: $EJABBERD_DOMAIN
             EJABBERD_USER: $EJABBERD_USER
             EJABBERD_PASSWORD: $EJABBERD_PASSWORD
@@ -238,98 +238,98 @@ services:
             - "traefik.http.routers.back.entryPoints=web"
             - "traefik.http.services.back.loadbalancer.server.port=8080"
 
-    map-storage:
-        image: thecodingmachine/nodejs:v2-18-bullseye
-        command: npm run start:dev
-        #command: npm run profile
-        working_dir: /usr/src/app/map-storage
-        environment:
-            #DEBUG: "*"
-            STARTUP_COMMAND_1: ../wait-proto.sh
-            STARTUP_COMMAND_2: ../npm-install.sh
-            NODE_ENV: development
-            PROMETHEUS_AUTHORIZATION_TOKEN: "$PROMETHEUS_AUTHORIZATION_TOKEN"
-            AUTHENTICATION_STRATEGY: "Basic"
-            AUTHENTICATION_USER: "john.doe"
-            AUTHENTICATION_PASSWORD: "password"
-            API_URL: back:50051
-            # Sentry integration
-            SENTRY_DSN: $SENTRY_DSN_MAPSTORAGE
-            SENTRY_ENVIRONMENT: $SENTRY_ENVIRONMENT
-            SENTRY_RELEASE: $SENTRY_RELEASE
-        volumes:
-            - .:/usr/src/app
-        ports:
-            - "9233:9229"
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.map-storage.rule=Host(`map-storage.workadventure.localhost`)"
-            - "traefik.http.routers.map-storage.entryPoints=web"
-            - "traefik.http.routers.map-storage.service=map-storage"
-            - "traefik.http.services.map-storage.loadbalancer.server.port=3000"
-            - "traefik.http.routers.map-storage-ui.rule=Host(`map-storage.workadventure.localhost`) && PathPrefix(`/ui/`)"
-            - "traefik.http.routers.map-storage-ui.entryPoints=web"
-            - "traefik.http.routers.map-storage-ui.service=map-storage-ui"
-            - "traefik.http.services.map-storage-ui.loadbalancer.server.port=8080"
+    # map-storage:
+    #     image: thecodingmachine/nodejs:v2-18-bullseye
+    #     command: npm run start:dev
+    #     #command: npm run profile
+    #     working_dir: /usr/src/app/map-storage
+    #     environment:
+    #         #DEBUG: "*"
+    #         STARTUP_COMMAND_1: ../wait-proto.sh
+    #         STARTUP_COMMAND_2: ../npm-install.sh
+    #         NODE_ENV: development
+    #         PROMETHEUS_AUTHORIZATION_TOKEN: "$PROMETHEUS_AUTHORIZATION_TOKEN"
+    #         AUTHENTICATION_STRATEGY: "Basic"
+    #         AUTHENTICATION_USER: "john.doe"
+    #         AUTHENTICATION_PASSWORD: "password"
+    #         API_URL: back:50051
+    #         # Sentry integration
+    #         SENTRY_DSN: $SENTRY_DSN_MAPSTORAGE
+    #         SENTRY_ENVIRONMENT: $SENTRY_ENVIRONMENT
+    #         SENTRY_RELEASE: $SENTRY_RELEASE
+    #     volumes:
+    #         - .:/usr/src/app
+    #     ports:
+    #         - "9233:9229"
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.map-storage.rule=Host(`map-storage.workadventure.localhost`)"
+    #         - "traefik.http.routers.map-storage.entryPoints=web"
+    #         - "traefik.http.routers.map-storage.service=map-storage"
+    #         - "traefik.http.services.map-storage.loadbalancer.server.port=3000"
+    #         - "traefik.http.routers.map-storage-ui.rule=Host(`map-storage.workadventure.localhost`) && PathPrefix(`/ui/`)"
+    #         - "traefik.http.routers.map-storage-ui.entryPoints=web"
+    #         - "traefik.http.routers.map-storage-ui.service=map-storage-ui"
+    #         - "traefik.http.services.map-storage-ui.loadbalancer.server.port=8080"
 
-    uploader:
-        image: thecodingmachine/nodejs:v2-18-bullseye
-        command: npm run dev
-        #command: npm run profile
-        working_dir: /usr/src/app/uploader
-        environment:
-            DEBUG: "*"
-            STARTUP_COMMAND_1: ../npm-install.sh
-            UPLOADER_URL: http://uploader.workadventure.localhost
-            #AWS
-            AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
-            AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
-            AWS_DEFAULT_REGION: "$AWS_DEFAULT_REGION"
-            AWS_BUCKET: "$AWS_BUCKET"
-            AWS_ENDPOINT: "$AWS_ENDPOINT"
-            UPLOADER_AWS_SIGNED_URL_EXPIRATION: "$UPLOADER_AWS_SIGNED_URL_EXPIRATION"
-            #REDIS
-            REDIS_HOST: "$UPLOADER_REDIS_HOST"
-            REDIS_PORT: "$UPLOADER_REDIS_PORT"
-            REDIS_DB_NUMBER: "$UPLOADER_REDIS_DB_NUMBER"
-            ENABLE_CHAT_UPLOAD: "$ENABLE_CHAT_UPLOAD"
-            UPLOAD_MAX_FILESIZE: "$UPLOAD_MAX_FILESIZE"
-        volumes:
-            - .:/usr/src/app
-        ports:
-            - "9234:9229"
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.uploader.rule=Host(`uploader.workadventure.localhost`)"
-            - "traefik.http.routers.uploader.entryPoints=web"
-            - "traefik.http.services.uploader.loadbalancer.server.port=8080"
+    # uploader:
+    #     image: thecodingmachine/nodejs:v2-18-bullseye
+    #     command: npm run dev
+    #     #command: npm run profile
+    #     working_dir: /usr/src/app/uploader
+    #     environment:
+    #         DEBUG: "*"
+    #         STARTUP_COMMAND_1: ../npm-install.sh
+    #         UPLOADER_URL: http://uploader.workadventure.localhost
+    #         #AWS
+    #         AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
+    #         AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
+    #         AWS_DEFAULT_REGION: "$AWS_DEFAULT_REGION"
+    #         AWS_BUCKET: "$AWS_BUCKET"
+    #         AWS_ENDPOINT: "$AWS_ENDPOINT"
+    #         UPLOADER_AWS_SIGNED_URL_EXPIRATION: "$UPLOADER_AWS_SIGNED_URL_EXPIRATION"
+    #         #REDIS
+    #         REDIS_HOST: "$UPLOADER_REDIS_HOST"
+    #         REDIS_PORT: "$UPLOADER_REDIS_PORT"
+    #         REDIS_DB_NUMBER: "$UPLOADER_REDIS_DB_NUMBER"
+    #         ENABLE_CHAT_UPLOAD: "$ENABLE_CHAT_UPLOAD"
+    #         UPLOAD_MAX_FILESIZE: "$UPLOAD_MAX_FILESIZE"
+    #     volumes:
+    #         - .:/usr/src/app
+    #     ports:
+    #         - "9234:9229"
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.uploader.rule=Host(`uploader.workadventure.localhost`)"
+    #         - "traefik.http.routers.uploader.entryPoints=web"
+    #         - "traefik.http.services.uploader.loadbalancer.server.port=8080"
 
-    messages:
-        image: thecodingmachine/nodejs:v2-18-bullseye-build
-        platform:
-          linux/amd64
-        environment:
-            #STARTUP_COMMAND_0: sudo apt-get install -y inotify-tools
-            STARTUP_COMMAND_1: npm install
-            STARTUP_COMMAND_2: npm run proto:watch
-        volumes:
-            - ./messages:/usr/src/app
-            - ./back:/usr/src/back
-            - ./play:/usr/src/play
-            - ./chat:/usr/src/chat
-            - ./map-storage:/usr/src/map-storage
-            - ./libs:/usr/src/libs
+    # messages:
+    #     image: thecodingmachine/nodejs:v2-18-bullseye-build
+    #     platform:
+    #       linux/amd64
+    #     environment:
+    #         #STARTUP_COMMAND_0: sudo apt-get install -y inotify-tools
+    #         STARTUP_COMMAND_1: npm install
+    #         STARTUP_COMMAND_2: npm run proto:watch
+    #     volumes:
+    #         - ./messages:/usr/src/app
+    #         - ./back:/usr/src/back
+    #         - ./play:/usr/src/play
+    #         - ./chat:/usr/src/chat
+    #         - ./map-storage:/usr/src/map-storage
+    #         - ./libs:/usr/src/libs
 
     redis:
         image: redis:6
 
-    redisinsight:
-        image: redislabs/redisinsight:latest
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.redisinsight.rule=Host(`redis.workadventure.localhost`)"
-            - "traefik.http.routers.redisinsight.entryPoints=web"
-            - "traefik.http.services.redisinsight.loadbalancer.server.port=8001"
+    # redisinsight:
+    #     image: redislabs/redisinsight:latest
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.redisinsight.rule=Host(`redis.workadventure.localhost`)"
+    #         - "traefik.http.routers.redisinsight.entryPoints=web"
+    #         - "traefik.http.services.redisinsight.loadbalancer.server.port=8001"
 
     icon:
         image: matthiasluedtke/iconserver:v3.13.0
@@ -357,78 +357,78 @@ services:
         - "traefik.http.routers.xmpp.entryPoints=web"
         - "traefik.http.services.xmpp.loadbalancer.server.port=5443"
 
-    # A mock server to test OpenID connect connectivity
-    oidc-server-mock:
-        image: ghcr.io/soluto/oidc-server-mock:0.7.0
-        environment:
-            ASPNETCORE_ENVIRONMENT: Development
-            SERVER_OPTIONS_INLINE: |
-                {
-                  "AccessTokenJwtType": "JWT",
-                  "Discovery": {
-                    "ShowKeySet": true
-                  },
-                  "Authentication": {
-                    "CookieSameSiteMode": "Lax",
-                    "CheckSessionCookieSameSiteMode": "Lax"
-                  }
-                }
-            LOGIN_OPTIONS_INLINE: |
-                {
-                  "AllowRememberLogin": false
-                }
-            LOGOUT_OPTIONS_INLINE: |
-                {
-                  "AutomaticRedirectAfterSignOut": true
-                }
-            API_SCOPES_INLINE: |
-                - Name: some-app-scope-1
-                - Name: some-app-scope-2
-            API_RESOURCES_INLINE: |
-                - Name: some-app
-                  Scopes:
-                    - some-app-scope-1
-                    - some-app-scope-2
-            USERS_CONFIGURATION_INLINE: |
-                [
-                  {
-                    "SubjectId":"1",
-                    "Username":"User1",
-                    "Password":"pwd",
-                    "Claims": [
-                      {
-                        "Type": "name",
-                        "Value": "Sam Tailor"
-                      },
-                      {
-                        "Type": "email",
-                        "Value": "sam.tailor@gmail.com"
-                      },
-                      {
-                        "Type": "some-api-resource-claim",
-                        "Value": "Sam's Api Resource Custom Claim"
-                      },
-                      {
-                        "Type": "some-api-scope-claim",
-                        "Value": "Sam's Api Scope Custom Claim"
-                      },
-                      {
-                        "Type": "some-identity-resource-claim",
-                        "Value": "Sam's Identity Resource Custom Claim"
-                      }
-                    ]
-                  }
-                ]
-            CLIENTS_CONFIGURATION_PATH: /tmp/config/clients-config.json
-        volumes:
-            - ./contrib/oidc-server-mock:/tmp/config:ro
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.oidc.rule=Host(`oidc.workadventure.localhost`)"
-            - "traefik.http.routers.oidc.entryPoints=web"
-        healthcheck:
-            #disable: true
-            timeout: 5s
+    # # A mock server to test OpenID connect connectivity
+    # oidc-server-mock:
+    #     image: ghcr.io/soluto/oidc-server-mock:0.7.0
+    #     environment:
+    #         ASPNETCORE_ENVIRONMENT: Development
+    #         SERVER_OPTIONS_INLINE: |
+    #             {
+    #               "AccessTokenJwtType": "JWT",
+    #               "Discovery": {
+    #                 "ShowKeySet": true
+    #               },
+    #               "Authentication": {
+    #                 "CookieSameSiteMode": "Lax",
+    #                 "CheckSessionCookieSameSiteMode": "Lax"
+    #               }
+    #             }
+    #         LOGIN_OPTIONS_INLINE: |
+    #             {
+    #               "AllowRememberLogin": false
+    #             }
+    #         LOGOUT_OPTIONS_INLINE: |
+    #             {
+    #               "AutomaticRedirectAfterSignOut": true
+    #             }
+    #         API_SCOPES_INLINE: |
+    #             - Name: some-app-scope-1
+    #             - Name: some-app-scope-2
+    #         API_RESOURCES_INLINE: |
+    #             - Name: some-app
+    #               Scopes:
+    #                 - some-app-scope-1
+    #                 - some-app-scope-2
+    #         USERS_CONFIGURATION_INLINE: |
+    #             [
+    #               {
+    #                 "SubjectId":"1",
+    #                 "Username":"User1",
+    #                 "Password":"pwd",
+    #                 "Claims": [
+    #                   {
+    #                     "Type": "name",
+    #                     "Value": "Sam Tailor"
+    #                   },
+    #                   {
+    #                     "Type": "email",
+    #                     "Value": "sam.tailor@gmail.com"
+    #                   },
+    #                   {
+    #                     "Type": "some-api-resource-claim",
+    #                     "Value": "Sam's Api Resource Custom Claim"
+    #                   },
+    #                   {
+    #                     "Type": "some-api-scope-claim",
+    #                     "Value": "Sam's Api Scope Custom Claim"
+    #                   },
+    #                   {
+    #                     "Type": "some-identity-resource-claim",
+    #                     "Value": "Sam's Identity Resource Custom Claim"
+    #                   }
+    #                 ]
+    #               }
+    #             ]
+    #         CLIENTS_CONFIGURATION_PATH: /tmp/config/clients-config.json
+    #     volumes:
+    #         - ./contrib/oidc-server-mock:/tmp/config:ro
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.oidc.rule=Host(`oidc.workadventure.localhost`)"
+    #         - "traefik.http.routers.oidc.entryPoints=web"
+    #     healthcheck:
+    #         #disable: true
+    #         timeout: 5s
 
 #  coturn:
 #    image: coturn/coturn:4.5.2

@@ -264,13 +264,15 @@ services:
   ejabberd:
     image: ejabberd/ecs:latest
     environment:
-      - CTL_ON_CREATE=register ${EJABBERD_USER} ${EJABBERD_DOMAIN} ${EJABBERD_PASSWORD}
-      - JWT_SECRET=${EJABBERD_JWT_SECRET}
       - EJABBERD_DOMAIN=${EJABBERD_DOMAIN}
       - EJABBERD_USER=${EJABBERD_USER}
       - EJABBERD_PASSWORD=${EJABBERD_PASSWORD}
+      - CTL_ON_CREATE=register ${EJABBERD_USER} ${EJABBERD_DOMAIN} ${EJABBERD_PASSWORD}
     volumes:
-      - ./ejabberd.yml:/opt/ejabberd/conf/ejabberd.template.yml
+      - ./conf/jwt_key:/home/ejabberd/conf/jwt_key
+      - ./conf/ejabberd.yml:/home/ejabberd/conf/ejabberd.yml
+      - ./conf:/opt/conf
+      - ./database:/home/ejabberd/database
     labels:
       traefik.enable: "true"
       traefik.http.middlewares.strip-ejabberd-prefix.stripprefix.prefixes: "/xmpp"

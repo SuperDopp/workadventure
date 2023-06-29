@@ -36,64 +36,79 @@ export interface ChatMessage {
     authorName?: string;
 }
 
+interface ChatGroup {
+    messages: ChatMessage[];
+    users: User[];
+}
+
 function createChatMessagesStore() {
-    const { subscribe, update } = writable<ChatMessage[]>([]);
+    const { subscribe, update } = writable<ChatGroup>({ messages: [], users: [] });
 
     return {
         subscribe,
         addIncomingUser(user: User) {
-            update((list) => {
-                list.push({
+            update((chatGroup) => {
+                chatGroup.messages.push({
                     type: ChatMessageTypes.userIncoming,
                     targets: [user],
                     date: new Date(),
                 });
-                return list;
+                chatGroup.users.push(user);
+                return chatGroup;
             });
         },
         addOutcomingUser(user: User) {
-            update((list) => {
-                list.push({
-                    type: ChatMessageTypes.userOutcoming,
+            update((chatGroup) => {
+                chatGroup.messages.push({
+                    type: ChatMessageTypes.userIncoming,
                     targets: [user],
                     date: new Date(),
                 });
-                return list;
+                for (let i = 0; i < chatGroup.users.length; i++) {
+                    if (chatGroup.users[i].name == user.name) {
+                        chatGroup.users.splice(i, 1);
+                        break;
+                    }
+                }
+                return chatGroup;
             });
         },
         addPersonalMessage(text: string) {
             _newChatMessageSubject.next(text);
-            update((list) => {
+            update((chatGroup) => {
+                console.log("chat.Stores.ChatStore.addPersonalMessage:", text);
+                console.log("====================================");
                 const defaultRoom = mucRoomsStore.getDefaultRoom();
-                list.push({
+                chatGroup.messages.push({
                     type: ChatMessageTypes.me,
                     text: [text],
                     author: defaultRoom ? defaultRoom.getUserByJid(defaultRoom.myJID) : undefined,
                     date: new Date(),
                     authorName: userStore.get().name,
                 });
-                return list;
+                return chatGroup;
             });
         },
         /**
          * @param origin The iframe that originated this message (if triggered from the Scripting API), or undefined otherwise.
          */
         addExternalMessage(user: User | undefined, text: string, authorName?: string, origin?: Window) {
-            update((list) => {
-                list.push({
+            console.log("chat.Stores.Chatstores.addExternalMessage: ", text);
+            update((chatGroup) => {
+                chatGroup.messages.push({
                     type: ChatMessageTypes.text,
                     text: [text],
                     author: user,
                     date: new Date(),
                     authorName,
                 });
-                return list;
+                return chatGroup;
             });
         },
 
         reInitialize() {
             update(() => {
-                return [];
+                return { messages: [], users: [] };
             });
         },
     };
