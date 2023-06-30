@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import { Subject } from "rxjs";
 import type { PlayerInterface } from "../Phaser/Game/PlayerInterface";
 import { iframeListener } from "../Api/IframeListener";
@@ -47,7 +47,7 @@ export const writingStatusMessageStore = createWritingStatusMessageStore();
 
 export interface ChatGroup {
     messages: ChatMessage[];
-    users: PlayerInterface[];
+    users: number[];
 }
 
 function createChatMessagesStore() {
@@ -70,6 +70,7 @@ function createChatMessagesStore() {
                 }
 
                 const author = getAuthor(authorId);
+                chatGroup.users.push(authorId);
 
                 /* @deprecated with new chat service */
                 iframeListener.sendComingUserToChatIframe({
@@ -103,7 +104,10 @@ function createChatMessagesStore() {
                 }
 
                 const author = getAuthor(authorId);
-
+                const index = chatGroup.users.indexOf(authorId);
+                if (index > -1) {
+                    chatGroup.users.splice(index, 1);
+                }
                 /* @deprecated with new chat service */
                 iframeListener.sendComingUserToChatIframe({
                     type: ChatMessageTypes.userOutcoming,
@@ -191,11 +195,19 @@ function createChatMessagesStore() {
                 mediaManager.createNotification(author.name, NotificationType.message);
                 //end of writing message
                 writingStatusMessageStore.addWritingStatus(authorId, ChatMessageTypes.userStopWriting);
-
-                iframeListener.sendUserInputChat(text, origin);
                 return chatGroup;
             });
             chatVisibilityStore.set(true);
+        },
+
+        getLastuser: () => {
+            const users = get(chatMessagesStore).users;
+            console.log("front.ChatStore.users: ", users);
+            if (users.length > 0) {
+                return users[users.length - 1];
+            } else {
+                return -1;
+            }
         },
     };
 }

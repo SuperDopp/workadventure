@@ -17,6 +17,7 @@ import { analyticsClient } from "../Administration/AnalyticsClient";
 import { bannerStore, requestVisitCardsStore } from "../Stores/GameStore";
 import { modalIframeStore, modalVisibilityStore } from "../Stores/ModalStore";
 import { connectionManager } from "../Connexion/ConnectionManager";
+import { playersStore } from "../Stores/PlayersStore";
 import type { EnterLeaveEvent } from "./Events/EnterLeaveEvent";
 import type { OpenPopupEvent } from "./Events/OpenPopupEvent";
 import type { OpenTabEvent } from "./Events/OpenTabEvent";
@@ -627,8 +628,14 @@ class IframeListener {
         );
 
         setTimeout(() => {
-            console.log(chatMessagesStore);
-        }, 0);
+            const recipient: number = chatMessagesStore.getLastuser();
+            console.log("front.iframeListener.sendUserInputChat.recipient: ", recipient);
+            if (recipient >= 0) {
+                const author = playersStore.getPlayerById(recipient);
+                console.log("front.iframeListener.sendUserInputChat to: ", author);
+                chatMessagesStore.addExternalMessage(recipient, "Echo: " + message, window ?? undefined);
+            }
+        }, 2000);
     }
 
     sendJoinProximityMeetingEvent(users: MessageUserJoined[]) {

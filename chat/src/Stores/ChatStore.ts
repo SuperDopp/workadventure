@@ -60,7 +60,7 @@ function createChatMessagesStore() {
         addOutcomingUser(user: User) {
             update((chatGroup) => {
                 chatGroup.messages.push({
-                    type: ChatMessageTypes.userIncoming,
+                    type: ChatMessageTypes.userOutcoming,
                     targets: [user],
                     date: new Date(),
                 });
@@ -150,7 +150,7 @@ export const selectedMessageToReact = writable<Message | null>(null);
 export const timelineMessagesToSee = derived(
     [chatMessagesStore, lastTimelineMessageRead],
     ([$chatMessagesStore, $lastTimelineMessageRead]) =>
-        $chatMessagesStore.filter((message) => message.date > $lastTimelineMessageRead).length
+        $chatMessagesStore.messages.filter((message) => message.date > $lastTimelineMessageRead).length
 );
 
 export const filesUploadStore = writable<Map<string, UploadedFile | FileExt>>(
