@@ -626,16 +626,31 @@ class IframeListener {
             },
             exceptOrigin
         );
-
-        setTimeout(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        (async () => {
             const recipient: number = chatMessagesStore.getLastuser();
+            const sender = localUserStore.getLocalUser();
             console.log("front.iframeListener.sendUserInputChat.recipient: ", recipient);
             if (recipient >= 0) {
                 const author = playersStore.getPlayerById(recipient);
-                console.log("front.iframeListener.sendUserInputChat to: ", author);
-                chatMessagesStore.addExternalMessage(recipient, "Echo: " + message, window ?? undefined);
+                const response = await fetch("https://superdopp.innopia.tech/gpt/chat_completion", {
+                    method: "POST", // *GET, POST, PUT, DELETE, etc.
+                    headers: {
+                        "Content-Type": "application/json",
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: JSON.stringify({
+                        sender: sender?.uuid,
+                        recipient: author?.name,
+                        message: message,
+                    }), // body data type must match "Content-Type" header
+                });
+                if (response.status === 200) {
+                    const data = await response.json();
+                    chatMessagesStore.addExternalMessage(recipient, data.reply);
+                }
             }
-        }, 2000);
+        })();
     }
 
     sendJoinProximityMeetingEvent(users: MessageUserJoined[]) {
