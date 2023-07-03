@@ -15,8 +15,8 @@ import { ADMIN_API_URL } from "../enums/EnvironmentVariable";
 import { adminService } from "./AdminService";
 
 export const MetaTagsDefaultValue: RequiredMetaTagsData = {
-    title: "WorkAdventure",
-    description: "Create your own digital office, Metaverse and meet online with the world.",
+    title: "SuperDopp Demo",
+    description: "Demo of Superdopp.",
     author: "WorkAdventure team",
     provider: "WorkAdventure",
     favIcons: [
